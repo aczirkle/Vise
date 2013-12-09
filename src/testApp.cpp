@@ -282,13 +282,10 @@ bool isConnected(int &totalPiecesOnBoard, int &filledTileCount, int* &filledTile
 		}
 	}
 	std::list<int> open;
-	//int* open= new int[10]();
 	filledTileCount = 0;
-	open.assign(0, firstPiece);
-	std::vector<int> tileStatus;//= new std::vector<int>();
-	//for (int statusCount = 0; statusCount < totalPiecesOnBoard; statusCount++)
-		//tileStatus.at //.at(statusCount) = 0;
-	//tileStatus.at(0) = 1;
+	open.push_front(firstPiece);
+	std::vector<int> tileStatus;
+
 	while (open.size() != 0){
 		int visitingNode = open.front();
 		int visitingNodeX = visitingNode%boardW;
@@ -299,7 +296,7 @@ bool isConnected(int &totalPiecesOnBoard, int &filledTileCount, int* &filledTile
 		tileStatus.push_back(2);
 		if (board.getPiece(visitingNodeX, visitingNodeY) != 0)
 			filledTileCount++;
-		int* neighbors = board.getNeighbors(visitingNodeX, visitingNodeY);
+		std::vector<int> neighbors = board.getNeighborsV(visitingNodeX, visitingNodeY);
 		for (int neighborCount = 0; neighborCount < board.getNeighborListSize(visitingNodeX, visitingNodeY); neighborCount++){
 			
 			if (tileStatus.at(neighbors[neighborCount]) == 0){
