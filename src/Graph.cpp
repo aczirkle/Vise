@@ -63,9 +63,6 @@ std::vector<int> Graph::getNeighborsV(int x,int y){
 		neighborList.push_back(adjList.at((y*20)+x).edgeList.at(edgeCount).dest);
 	return neighborList;
 }
-std::vector<int> Graph::getNeighborsV(int index){
-	return getNeighborsV(index%20, index/20);
-}
 int Graph::getNeighborListSize(int x, int y){
 	return adjList.at(y*20+x).edgeList.size();
 }

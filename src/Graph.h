@@ -49,7 +49,6 @@ public:
   int getConnected(int i);
   //returns an integer list of the neighbors of the tile located at (x,y)
   int* getNeighbors(int x, int y);
-  std::vector<int> getNeighborsV(int index);
   std::vector<int> getNeighborsV(int x, int y);
   int getNeighborListSize(int x, int y);
   //void placePiece(int x, int y, int given);
