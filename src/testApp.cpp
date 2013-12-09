@@ -18,7 +18,7 @@ void checkNbrs(int x, int y, int& okayNbrs, int& badNbrs);
 bool canPlaceNewPiece(int x, int y);
 bool isNeighboringSpace(int x, int y);
 bool isJumpSpace(int x, int y);
-bool isConnected(int &totalPiecesOnBoard, int &filedTileCount);
+bool isConnected(int &totalPiecesOnBoard, int &filedTileCount, int* &filledTiles);
 bool canPlaceOldPiece(int x, int y);
 int pieceAt(int x,int y);
 void putPieceAt(int x, int y, int whichPiece);
@@ -44,7 +44,7 @@ int boardH = 20;
 
 int totalPiecesOnBoard = 0;
 int filledTileCount = 0;
-int* filledTiles = new int[10];
+int* filledTiles = new int[10]();
 
 //Number of spare playing pieces left, for each player
 int pl1spares=4;
@@ -170,7 +170,7 @@ void doVise(){
 			}
 		}
 		delete[] filledTiles;
-		filledTiles = new int[10];
+		filledTiles = new int[10]();
 	}
 	//	board.getConnected(/* place that is a spot in the array. Could technically loop through all spots*/)
 	
@@ -226,6 +226,8 @@ void checkNbrs(int x, int y, int& okayNbrs, int& badNbrs){
  * opposing player's piece
  */
 bool canPlaceNewPiece(int x, int y){
+	if(board.getPiece(x,y)!=0)
+		return false;
     int okayNbrs=0;
     int badNbrs=0;
     checkNbrs(x,y,okayNbrs,badNbrs);
@@ -281,27 +283,28 @@ bool isConnected(int &totalPiecesOnBoard, int &filledTileCount, int* &filledTile
 				firstPiece = index;
 		}
 	}
-
-	std::stack<int> open;
+	std::list<int> open;
 	filledTileCount = 0;
-	open.push(firstPiece);
-	int* tileStatus = new int[totalPiecesOnBoard];
-	for (int statusCount = 0; statusCount < totalPiecesOnBoard; statusCount++)
-		tileStatus[statusCount] = 0;
-	tileStatus[0] = 1;
+	open.push_front(firstPiece);
+	std::vector<int> tileStatus;
+
 	while (open.size() != 0){
-		int visitingNode = open.top();
+		int visitingNode = open.front();
 		int visitingNodeX = visitingNode%boardW;
 		int visitingNodeY = visitingNode/boardH;
-		open.pop();
-		tileStatus[visitingNode] = 2;
+		open.pop_front();
+		//open.pop();
+		//tileStatus.at(visitingNode) = 2;
+		tileStatus.push_back(2);
 		if (board.getPiece(visitingNodeX, visitingNodeY) != 0)
 			filledTileCount++;
+		std::vector<int> neighbors = board.getNeighborsV(visitingNodeX, visitingNodeY);
 		for (int neighborCount = 0; neighborCount < board.getNeighborListSize(visitingNodeX, visitingNodeY); neighborCount++){
-			int* neighbors = board.getNeighbors(visitingNodeX, visitingNodeY);
-			if (tileStatus[neighbors[neighborCount]] == 0){
-				tileStatus[neighbors[neighborCount]] = 1;
-				open.push(neighbors[neighborCount]);
+			
+			if (tileStatus.at(neighbors[neighborCount]) == 0){
+				tileStatus.at(neighbors[neighborCount]) = 1;
+				open.push_front(neighbors[neighborCount]);
+				//open.push(neighbors[neighborCount]);
 			}
 		}
 	}
@@ -310,7 +313,6 @@ bool isConnected(int &totalPiecesOnBoard, int &filledTileCount, int* &filledTile
 		return true;
     else return false;
 }
-
 /* This is used when the player is moving one of her pieces that is
  * already on the board to a new space.
  *
@@ -332,15 +334,16 @@ bool isConnected(int &totalPiecesOnBoard, int &filledTileCount, int* &filledTile
  *       isJumpSpace, and isConnected as subroutines here.
  */
 bool canPlaceOldPiece(int x, int y){
-
+	if(board.getPiece(x,y)!=0)
+		return false;
 	if(canPlaceNewPiece(x,y))	
 		return true;
 	else if (isNeighboringSpace(x,y))
 		return true;
 	else if (isJumpSpace(x,y))
 		return true;
-	//else if (!isConnected())
-	//	return false;
+	//else if (isConnected())
+	//	return true;
 	else
 		return false;
 }

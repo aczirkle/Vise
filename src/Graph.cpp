@@ -31,7 +31,8 @@ void Graph::Setup(){
 		}
 		if(i%20>0)
 			addEdge(i,i-1);
-		if(i%20<20)            
+		if(i%20<20)
+			if(i!=399)
 			addEdge(i,i+1);
 		if(i+20<400){
 			if(((i%40)<20) && ((i-1)%20>0))
@@ -51,10 +52,19 @@ int Graph::getPiece(int x, int y){
 	return adjList.at((y*20)+x).piece;
 }
 int* Graph::getNeighbors(int x, int y){
-	int* neighborList = new int[adjList.at((y*20)+x).edgeList.size()];
+	int* neighborList = new int[adjList.at((y*20)+x).edgeList.size()]();
 	for (int edgeCount = 0; edgeCount < adjList.at((y*20)+x).edgeList.size(); edgeCount++)
 		neighborList[edgeCount] = adjList.at((y*20)+x).edgeList.at(edgeCount).dest;
 	return neighborList;
+}
+std::vector<int> Graph::getNeighborsV(int x,int y){
+	std::vector<int> neighborList;
+	for (int edgeCount = 0; edgeCount < adjList.at((y*20)+x).edgeList.size(); edgeCount++)
+		neighborList.push_back(adjList.at((y*20)+x).edgeList.at(edgeCount).dest);
+	return neighborList;
+}
+std::vector<int> Graph::getNeighborsV(int index){
+	return getNeighborsV(index%20, index/20);
 }
 int Graph::getNeighborListSize(int x, int y){
 	return adjList.at(y*20+x).edgeList.size();
